@@ -68,7 +68,7 @@ app.post('/save', function(req, res){
 //				console.log('filepath', filePath);
 
 				fs.writeFile(filePath, dat, function(err){
-                    upload_to_cloud(filePath,fileName).then(function(results){
+                    upload_to_cloud(filePath,fileName, 'public').then(function(results){
                         callback(null, fileName);
                     });
 				});
@@ -94,7 +94,7 @@ app.post('/save_zip', function(req, res){
 				fs.writeFile(filePath, dat, function(err){
 					callback(null, filePath);
 				});
-				upload_to_cloud(filePath,fileName).then(function(results){
+				upload_to_cloud(filePath,fileName, 'public').then(function(results){
                         console.log("zip file uploaded")});
 			},
 
@@ -180,7 +180,7 @@ function createZipFile(csvObj, callback){
 	output.on('close', function() {
 		callback(null, {
 			name : fileName,
-			url : 'https://storage.googleapis.com/test-annotations-bucket' + '/public/' + fileName
+			url : 'https://storage.googleapis.com/test-annotations-bucket' + '/zip/' + fileName
 		});
 	});
 	var archive = archiver('zip', {
@@ -195,10 +195,10 @@ function createZipFile(csvObj, callback){
 		}
 	}
 	archive.finalize();
-	upload_to_cloud(filePath,fileName).then(function(results){
+	upload_to_cloud(filePath,fileName, 'zip').then(function(results){
                         console.log("zip file uploaded")});
 }
-function upload_to_cloud(filePath,fileName){
+function upload_to_cloud(filePath,fileName, folder){
 
     var faker = require('faker');
     const path = require('path');
@@ -207,10 +207,10 @@ function upload_to_cloud(filePath,fileName){
     const myStorage = new Storage();
     const bucket = myStorage.bucket('test-annotations-bucket');
     //const filePath = path.resolve(__dirname, `${fileName}`);
-    const uuid = 'public';
+//    const uuid = 'public';
 
     res = bucket.upload(filePath, {
-      destination: `${uuid}/${fileName}`,
+      destination: `${folder}/${fileName}`,
       gzip: true,
       metadata: {
         cacheControl: 'public, max-age=31536000'
@@ -257,10 +257,10 @@ function initDirectory(){
 	    fs.mkdirSync(path.join(tmp,'/data/zip'));
 	}
 
-	if (!(fs.existsSync('./public/spool') && fs.statSync('./public/spool').isDirectory())) fs.mkdirSync('./public/spool')
-	if (!(fs.existsSync('./public/data') && fs.statSync('./public/data').isDirectory())) fs.mkdirSync('./public/data');
-	if (!(fs.existsSync('./data') && fs.statSync('./data').isDirectory())) fs.mkdirSync('./data');
-	if (!(fs.existsSync('./data/zip') && fs.statSync('./data/zip').isDirectory())) fs.mkdirSync('./data/zip');
+//	if (!(fs.existsSync('./public/spool') && fs.statSync('./public/spool').isDirectory())) fs.mkdirSync('./public/spool')
+//	if (!(fs.existsSync('./public/data') && fs.statSync('./public/data').isDirectory())) fs.mkdirSync('./public/data');
+//	if (!(fs.existsSync('./data') && fs.statSync('./data').isDirectory())) fs.mkdirSync('./data');
+//	if (!(fs.existsSync('./data/zip') && fs.statSync('./data/zip').isDirectory())) fs.mkdirSync('./data/zip');
 	console.log('Init Folders');  
 }
 
