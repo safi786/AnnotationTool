@@ -907,7 +907,8 @@ function majax(data0, target, callback){
 				alert('ERROR! : ' + status + ' : ' + err.message);
 			}, 100);
 		}
-	});	
+	});
+
 }
 
 
